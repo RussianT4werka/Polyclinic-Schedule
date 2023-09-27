@@ -1,0 +1,63 @@
+﻿@page "/"
+@using BlazorView.Data;
+@inject HttpClient httpclient;
+@inject SessionManager sessions;
+@inject AuthenticationStateProvider auth;
+@inject NavigationManager nav;
+
+<PageTitle>Авторизация</PageTitle>
+
+<style>
+    .ali {
+        margin-top: 15%;
+        margin-left: 40%
+    }
+</style>
+
+<p>
+    <AuthorizeView>
+       <p>aboba</p>
+    </AuthorizeView>
+</p>
+<EditForm class="ali" Model="@userData" OnSubmit="Auth">
+    <h4>Логин</h4>
+    <p>
+        <InputText id="login" @bind-Value="userData.Login" />
+    </p>
+    <h4>Пароль</h4>
+    <p>
+        <InputText id="pass" @bind-Value="userData.Password" />
+    </p>
+    <button class ="btn btn-success" type="submit">Авторизация</button>
+    <a class="btn btn-primary" href="registration">Регистрация</a>
+</EditForm>
+
+@message
+
+@code {
+    UserData userData = new();
+    string message = "";
+    async Task Auth()
+    {
+        var answer = await httpclient.PostAsJsonAsync(
+            "Users/Authorization", userData);
+        if (answer.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
+            string session = await sessions.GenerateSessionAsync(idUser);
+            ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
+            //nav.NavigateTo("/counter");
+        }
+        else
+        {
+            message = await answer.Content.ReadAsStringAsync();
+        }
+    }
+
+    public class UserData
+    {
+        public string? Login { get; set; }
+        public string? Password { get; set; }
+        public string? Email { get; set; }
+    }
+}

@@ -1,0 +1,34 @@
+﻿@using BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inherits LayoutComponentBase
+@inject ProtectedSessionStorage storage
+@inject AuthenticationStateProvider auth;
+@inject SessionManager manager;
+<PageTitle>BlazorView</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code 
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var session = await storage.GetAsync<string>("session");
+        if (session.Success)
+        {
+            var id = manager.GetUserId(session.Value);
+            if (id != null)
+                ((CustomAuthStateProvider)auth).AuthUser(session.Value, id.Value);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

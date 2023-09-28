@@ -14,12 +14,8 @@
     }
 </style>
 
-<p>
-    <AuthorizeView>
-       <p>aboba</p>
-    </AuthorizeView>
-</p>
 <EditForm class="ali" Model="@userData" OnSubmit="Auth">
+    <h1 style="margin-bottom: 10%">Авторизация</h1>
     <h4>Логин</h4>
     <p>
         <InputText id="login" @bind-Value="userData.Login" />
@@ -28,11 +24,19 @@
     <p>
         <InputText id="pass" @bind-Value="userData.Password" />
     </p>
-    <button class ="btn btn-success" type="submit">Авторизация</button>
-    <a class="btn btn-primary" href="registration">Регистрация</a>
+
+    <p>
+        <label style="color: red">@message</label>
+    </p>
+
+    <p>
+        <button class="btn btn-success" type="submit">Авторизация</button>
+        <a class="btn btn-primary" href="registration">Регистрация</a>
+    </p>
+    
 </EditForm>
 
-@message
+
 
 @code {
     UserData userData = new();
@@ -46,7 +50,7 @@
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
             string session = await sessions.GenerateSessionAsync(idUser);
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
-            //nav.NavigateTo("/counter");
+            nav.NavigateTo("/AboutUser");
         }
         else
         {

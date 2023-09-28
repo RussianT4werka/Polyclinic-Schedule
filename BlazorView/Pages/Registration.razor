@@ -15,7 +15,7 @@
 </style>
 
 <EditForm class="ali" Model="@userData" OnSubmit="Reg">
-    <h3>Регистрация</h3>
+    <h1 style="margin-bottom: 10%">Регистрация</h1>
     <h4>Логин</h4>
     <p>
         <InputText id="login" @bind-Value="userData.Login" />
@@ -31,10 +31,15 @@
         <InputText id="email" @bind-Value="userData.Email" />
     </p>
 
+    <p>
+        <label style="color: red">@message</label>
+    </p>
     
+    <p>
+        <a class="btn btn-primary" href="/">Назад</a>
+        <button class="btn btn-success" type="submit">Зарегистрироваться</button>
+    </p>
     
-    <a class="btn btn-primary" href="/">Назад</a>
-    <button class="btn btn-success" type="submit">Зарегистрироваться</button>
 </EditForm>
 @code {
     UserData userData = new();

@@ -35,11 +35,11 @@ namespace Polyclinic_Schedule.Controllers
                 if (string.IsNullOrWhiteSpace(user.Login) ||
                     string.IsNullOrWhiteSpace(user.Password) ||
                     string.IsNullOrWhiteSpace(user.Email))
-                    return BadRequest("мало данных. введите еще.");
+                    return BadRequest("Мало данных. Введите еще.");
 
                 var checkUser = await db.Users.AnyAsync(s => s.Email == user.Email);
                 if (checkUser)
-                    return BadRequest("email уже используется. Мб это твой? Восстанови сам");
+                    return BadRequest("Email уже используется. Мб это твой? Восстанови сам");
 
                 string hashPass = Hash.HashPassword(user);
 
@@ -72,7 +72,7 @@ namespace Polyclinic_Schedule.Controllers
             {
                 if (string.IsNullOrWhiteSpace(user.Login) ||
                     string.IsNullOrWhiteSpace(user.Password))
-                    return BadRequest("мало данных. введите еще.");
+                    return BadRequest("Мало данных. Введите еще.");
 
                 var findUser = await db.Users.FirstOrDefaultAsync(s => s.Login == user.Login);
                 if (findUser == null)
@@ -81,7 +81,15 @@ namespace Polyclinic_Schedule.Controllers
                 string hashPass = Hash.HashPassword(user);
                 if (findUser.Password != hashPass)
                     return BadRequest("Пароль неверный. Подумай еще. Спроси родителей");
-                
+
+
+                if (!string.IsNullOrWhiteSpace(user.Login) &&
+                    !string.IsNullOrWhiteSpace(user.Password) &&
+                    findUser.Login != null && findUser.Password == hashPass)
+                {
+                    return Ok(findUser.Id);
+                }
+
                 return Ok(findUser.Id);
             }
             catch (Exception ex)

@@ -11,7 +11,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         return Task.FromResult(new AuthenticationState(claimsPrincipal));
     }
 
-    private static ClaimsIdentity GetAnon()
+    public static ClaimsIdentity GetAnon()
     {
         return new ClaimsIdentity(
                  new[]{  new Claim(ClaimTypes.Name, "Anon"),

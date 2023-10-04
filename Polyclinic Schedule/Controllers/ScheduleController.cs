@@ -40,6 +40,34 @@ namespace Polyclinic_Schedule.Controllers
             }
         }
 
+        [HttpPost("GenerateSchedule")]
+        public async Task<ActionResult> GenerateSchedule(DateTime start, int idDoctor)
+        {
+            try
+            {
+                start = new DateTime(start.Year, start.Month, start.Day, 7, 0, 0);
+
+                var finish = start.AddDays(5);
+                for (var date = start; date < finish; date = date.AddHours(2))
+                {
+                    if (date.Hour > 18)
+                    {
+                        date = date.AddDays(1);
+                        date = new DateTime(date.Year, date.Month, date.Day, 7, 0, 0);
+                    }
+                    if (date.DayOfWeek == DayOfWeek.Saturday)
+                        break;
+                    await db.Schedules.AddAsync(new Schedule { IdDoctor = idDoctor, StartTime = date });
+                }
+                await db.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
+            }
+        }
+
         [HttpGet("ListDoctorBySpeciality")]
         public async Task<ActionResult<List<DTO.Doctor>>>
             ListDoctorBySpeciality(int idSpeciality)

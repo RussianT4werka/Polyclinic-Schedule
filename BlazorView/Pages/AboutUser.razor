@@ -1,5 +1,8 @@
 ﻿@page "/AboutUser"
+@inject ProtectedSessionStorage storage
+@inject SessionManager manager;
 @using BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 @inject AuthenticationStateProvider auth;
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
@@ -23,37 +26,47 @@
         <InputText id="login" @bind-Value="userData.Login" />
     </p>
 
-    <h4>Пароль</h4>
-    <p>
-        <InputText id="pass" @bind-Value="userData.Password" />
-    </p>
-
     <h4>Фамилия</h4>
     <p>
-        <InputText id="pass" @bind-Value="userData.Password" />
+        <InputText id="pass" @bind-Value="userData.LastName" />
     </p>
 
     <h4>Имя</h4>
     <p>
-        <InputText id="pass" @bind-Value="userData.Password" />
+        <InputText id="pass" @bind-Value="userData.FirstName" />
     </p>
 
     <h4>Отчество</h4>
     <p>
-        <InputText id="pass" @bind-Value="userData.Password" />
+        <InputText id="pass" @bind-Value="userData.PatronymicName" />
     </p>
 
     <p>
         <a class="btn btn-primary" href="/">Назад</a>
-        <button class="btn btn-success" type="submit">Сохранить</button>
+        <button class="btn btn-success" @onclick="Edit" type="submit">Сохранить</button>
     </p>
 
 </EditForm>
 @code {
     UserData userData = new();
     string message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var session = await storage.GetAsync<string>("session");
+        if (session.Success)
+        {
+            var id = manager.GetUserId(session.Value);
+            userData.Id = id;
+            userData = await httpclient.GetFromJsonAsync<UserData>(
+            "UserCabinet/GetUserInfo?id=" + id);
+        }
+        await base.OnInitializedAsync();
+    }
+    
     async Task Edit()
     {
-        
+        var answer = await httpclient.PostAsJsonAsync(
+            "UserCabinet/EditUser", userData);
     }
 }

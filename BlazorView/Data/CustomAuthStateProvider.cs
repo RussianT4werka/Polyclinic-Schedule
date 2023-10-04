@@ -13,9 +13,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 
     public static ClaimsIdentity GetAnon()
     {
-        return new ClaimsIdentity(
-                 new[]{  new Claim(ClaimTypes.Name, "Anon"),
-                });
+        return new ClaimsIdentity();
     }
 
     public void AuthUser(string session, int id)
@@ -32,5 +30,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     public void Logout()
     {
         currentUser = GetAnon();
+        var task = GetAuthenticationStateAsync();
+        NotifyAuthenticationStateChanged(task);
     }
 }

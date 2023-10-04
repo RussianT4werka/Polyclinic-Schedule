@@ -4,6 +4,7 @@
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
 @using static BlazorView.Pages.Index;
+@inject NavigationManager nav;
 
 <PageTitle>Регистрация</PageTitle>
 
@@ -53,6 +54,7 @@
             int idUser = Convert.ToInt32(await answer.Content.ReadAsStringAsync());
             string session = await sessions.GenerateSessionAsync(idUser);
             ((CustomAuthStateProvider)auth).AuthUser(session, idUser);
+            nav.NavigateTo("/AboutUser");
         }
         else
         {

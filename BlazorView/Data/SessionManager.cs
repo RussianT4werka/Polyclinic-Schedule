@@ -26,5 +26,12 @@ namespace BlazorView.Data
                 return null;
             return userSesssion[session];
         }
+
+        public void Logout(string session)
+        {
+            userSesssion.Remove(session);
+            storage.DeleteAsync("session");
+        }
+
     }
 }

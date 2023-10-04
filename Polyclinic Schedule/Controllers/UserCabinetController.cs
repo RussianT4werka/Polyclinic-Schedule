@@ -36,7 +36,7 @@ namespace Polyclinic_Schedule.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("EditUser")]
         public async Task<ActionResult> EditUser(DTO.User data)
         {
             try

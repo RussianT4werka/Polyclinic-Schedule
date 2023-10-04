@@ -1,11 +1,14 @@
 ﻿@using BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using static BlazorView.Pages.Index;
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
+@inject ProtectedSessionStorage storage
 @inject AuthenticationStateProvider auth;
 @inject NavigationManager nav;
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Дурка №3</a>
+        <a class="navbar-brand" href="https://www.vl.ru/kraevaya-klinicheskaya-psihiatricheskaya-bolnica/shepetkova-14-branch-68866">Дурка №3</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -22,8 +25,14 @@
             </div>
 
             <div class="nav-item px-3">
-                <NavLink ty class="nav-link" href="/" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" type="submit" OnSubmit="LogOut" aria-hidden="true"></span> Выйти
+                <NavLink ty class="nav-link" href="/ListSpecialities" Match="NavLinkMatch.All">
+                    <span class="oi oi-home" type="submit" aria-hidden="true"></span> Специальности
+                </NavLink>
+            </div>
+
+            <div class="nav-item px-3">
+                <NavLink ty class="nav-link" href="/" Match="NavLinkMatch.All" @onclick="LogOut">
+                    <span class="oi oi-home" type="submit" aria-hidden="true"></span> Выйти
                 </NavLink>
             </div>
         </AuthorizeView>
@@ -31,6 +40,7 @@
 </div>
 
 @code {
+    UserData userData = new();
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -41,6 +51,11 @@
     }
     async Task LogOut()
     {
-        
+        var session = await storage.GetAsync<string>("session");
+        sessions.Logout(session.Value);
+
+        ((CustomAuthStateProvider)auth).Logout();
+        nav.NavigateTo("/");
+       
     }
 }

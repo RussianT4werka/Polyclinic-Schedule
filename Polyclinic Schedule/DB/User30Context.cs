@@ -137,4 +137,6 @@ public partial class User30Context : DbContext
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
     public DbSet<Polyclinic_Schedule.DTO.Speciality> Speciality { get; set; } = default!;
+
+    public DbSet<Polyclinic_Schedule.DTO.Doctor> Doctor { get; set; } = default!;
 }

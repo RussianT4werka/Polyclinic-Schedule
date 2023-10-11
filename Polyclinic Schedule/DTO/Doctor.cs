@@ -6,5 +6,6 @@
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string PatronymicName { get; set; }
+        public int idSpeciality { get; set; }
     }
 }

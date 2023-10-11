@@ -1,0 +1,31 @@
+﻿@page "/ScheduleList"
+<PageTitle>Расписание</PageTitle>
+@* <table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Фамилия</th>
+            <th>Имя</th>
+            <th>Отчество</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (Polyclinic_Schedule.DTO.Doctor doc in @Doctors)
+        {
+            <tr>
+                <td>@doc.Id</td>
+                <td>@doc.LastName</td>
+                <td>@doc.FirstName</td>
+                <td>@doc.PatronymicName</td>
+                <td>
+                    <NavLink href="@($"/.../{doc.Id}")" class="btn btn-primary">Посмотреть расписание</NavLink>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+@code {
+
+}

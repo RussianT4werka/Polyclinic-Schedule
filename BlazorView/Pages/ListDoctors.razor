@@ -1,0 +1,57 @@
+﻿@page "/ListDoctors/{id:int}"
+@using BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject HttpClient httpclient;
+@inject ProtectedSessionStorage storage
+@inject SessionManager manager;
+@using static BlazorView.Pages.Index;
+<AuthorizeView>
+<PageTitle>Список специальностей врачей</PageTitle>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (Polyclinic_Schedule.DTO.Doctor doc in @Doctors)
+            {
+                <tr>
+                    <td>@doc.Id</td>
+                    <td>@doc.LastName</td>
+                    <td>@doc.FirstName</td>
+                    <td>@doc.PatronymicName</td>
+                    <td>
+                        <NavLink href="@($"/.../{doc.Id}")" class="btn btn-primary">Посмотреть расписание</NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @code {
+        UserData userData = new();
+    string message = "";
+    [Parameter]
+    public int id { get; set; }
+    private List<Polyclinic_Schedule.DTO.Doctor> Doctors = new();
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+        Doctors = await httpclient.GetFromJsonAsync<List<Polyclinic_Schedule.DTO.Doctor>>("Doctors?id="+ id);
+        var session = await storage.GetAsync<string>("session");
+            if (session.Success)
+            {
+                var id = manager.GetUserId(session.Value!);
+                userData.Id = id;
+                userData = await httpclient.GetFromJsonAsync<UserData>(
+                "UserCabinet/GetUserInfo?id=" + id);
+            }
+        await base.OnInitializedAsync();
+        } 
+
+}
+</AuthorizeView>

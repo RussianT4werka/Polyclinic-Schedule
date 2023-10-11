@@ -22,7 +22,7 @@ namespace Polyclinic_Schedule.Controllers
         }
 
         // GET: api/Specialities
-        [HttpGet]
+        [HttpGet("GetSpeciality")]
         public async Task<ActionResult<IEnumerable<DTO.Speciality>>> GetSpeciality()
         {
           if (_context.Speciality == null)

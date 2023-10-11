@@ -1,5 +1,4 @@
-﻿using Polyclinic_Schedule.DB;
-
+﻿
 namespace Polyclinic_Schedule.DTO
 {
     public class UserSchedule

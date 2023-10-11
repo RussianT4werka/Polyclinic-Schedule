@@ -7,11 +7,8 @@
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
 @using static BlazorView.Pages.Index;
-<PageTitle>Регистрация</PageTitle>
-
-<style>
-
-</style>
+<AuthorizeView Context="auth">
+<PageTitle>Личный кабинет</PageTitle>
 
 <EditForm Model="@userData" OnSubmit="Edit">
     <h1 style="margin-bottom: 5%">Информация о пользователе</h1>
@@ -28,17 +25,17 @@
 
     <h4>Фамилия</h4>
     <p>
-        <InputText id="pass" @bind-Value="userData.LastName" />
+            <InputText id="login" @bind-Value="userData.LastName" />
     </p>
 
     <h4>Имя</h4>
     <p>
-        <InputText id="pass" @bind-Value="userData.FirstName" />
+            <InputText id="login" @bind-Value="userData.FirstName" />
     </p>
 
     <h4>Отчество</h4>
     <p>
-        <InputText id="pass" @bind-Value="userData.PatronymicName" />
+            <InputText id="login" @bind-Value="userData.PatronymicName" />
     </p>
 
     <p>
@@ -47,26 +44,27 @@
     </p>
 
 </EditForm>
-@code {
-    UserData userData = new();
-    string message = "";
 
-    protected override async Task OnInitializedAsync()
-    {
-        var session = await storage.GetAsync<string>("session");
-        if (session.Success)
+    @code {
+        UserData userData = new();
+        string message = "";
+        protected override async Task OnInitializedAsync()
         {
-            var id = manager.GetUserId(session.Value);
-            userData.Id = id;
-            userData = await httpclient.GetFromJsonAsync<UserData>(
-            "UserCabinet/GetUserInfo?id=" + id);
-        }
-        await base.OnInitializedAsync();
+            var session = await storage.GetAsync<string>("session");
+            if (session.Success)
+            {
+                var id = manager.GetUserId(session.Value!);
+                userData.Id = id;
+                userData = await httpclient.GetFromJsonAsync<UserData>(
+                "UserCabinet/GetUserInfo?id=" + id);
+            }
+            await base.OnInitializedAsync();
     }
     
     async Task Edit()
     {
-        var answer = await httpclient.PostAsJsonAsync(
-            "UserCabinet/EditUser", userData);
+        var answer = await httpclient.PostAsJsonAsync("UserCabinet/EditUser", userData);
     }
+
 }
+</AuthorizeView>

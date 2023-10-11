@@ -1,15 +1,61 @@
 ﻿@page "/ListSpecialities"
 @using BlazorView.Data;
+@inject SessionManager manager;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using static BlazorView.Pages.Index;
+@inject ProtectedSessionStorage storage
 @inject HttpClient httpclient;
 @inject SessionManager sessions;
 @inject AuthenticationStateProvider auth;
 @inject NavigationManager nav;
 
+<AuthorizeView>
 <PageTitle>Список специальностей врачей</PageTitle>
-@* <InputSelect @bind-Value="">
-   <option />
-</InputSelect> *@
-@code {
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Специальность</th>
+                <th></th>
+            </tr>
+        </thead>
 
-   
-}
+        <tbody>
+            @foreach (DoctorSpeciality spec in @docSpec)
+            {
+                <tr>
+                    <td>@spec.Id</td>
+                    <td>@spec.Title</td>
+                    <td>
+                        <NavLink href="@($"/ListDoctors/{spec.Id}")" class="btn btn-primary">Выбор доктора</NavLink>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @code {
+        UserData userData = new();
+        List<DoctorSpeciality> docSpec = new();
+        string message = "";
+
+        protected override async Task OnAfterRenderAsync(bool firstrender)
+        {
+            var session = await storage.GetAsync<string>("session");
+            if (session.Success)
+            {
+                var id = manager.GetUserId(session.Value!);
+                userData.Id = id;
+                docSpec = await httpclient.GetFromJsonAsync<List<DoctorSpeciality>>(
+                "Specialities/GetSpeciality");
+            }
+                await base.OnInitializedAsync();
+        }
+
+        public class DoctorSpeciality
+        {
+            public int? Id { get; set; }
+            public string? Title { get; set; }
+        }
+    }
+</AuthorizeView>

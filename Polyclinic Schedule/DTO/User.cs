@@ -14,7 +14,7 @@
 
         public string Email { get; set; }
 
-        public static explicit operator User(DB.User user)
+        public static explicit operator User(Polyclinic_Schedule.DB.User user)
         {
             return new User
             {

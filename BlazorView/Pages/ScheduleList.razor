@@ -1,31 +1,53 @@
-﻿@page "/ScheduleList"
+﻿@inject ProtectedSessionStorage storage
+@inject SessionManager manager;
+@inject HttpClient httpclient;
+@using BlazorView.Data;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using static BlazorView.Pages.Index;
+@page "/ScheduleList/{id:int}"
 <PageTitle>Расписание</PageTitle>
-@* <table class="table">
+<table class="table">
     <thead>
         <tr>
-            <th>Id</th>
-            <th>Фамилия</th>
-            <th>Имя</th>
-            <th>Отчество</th>
+            <th>Начало</th>
+            <th>Доктор</th>
             <th></th>
         </tr>
     </thead>
 
     <tbody>
-        @foreach (Polyclinic_Schedule.DTO.Doctor doc in @Doctors)
+        @foreach (Polyclinic_Schedule.DTO.UserSchedule sch in @Schedule)
         {
             <tr>
-                <td>@doc.Id</td>
-                <td>@doc.LastName</td>
-                <td>@doc.FirstName</td>
-                <td>@doc.PatronymicName</td>
+                <td>@sch.StartTime</td>
+                <td>@sch.IdDoctor</td>
                 <td>
-                    <NavLink href="@($"/.../{doc.Id}")" class="btn btn-primary">Посмотреть расписание</NavLink>
+                    <NavLink href="@($"/.../{sch.Id}")" class="btn btn-primary">Записаться</NavLink>
                 </td>
             </tr>
         }
     </tbody>
-</table> *@
+</table>
 @code {
-
+    public DateTime Date { get; set; } = DateTime.Now;
+    UserData userData = new();
+    string message = "";
+    [Parameter]
+    public int id { get; set; }
+    private List<Polyclinic_Schedule.DTO.UserSchedule> Schedule = new();
+    protected override async Task OnInitializedAsync()
+    {
+        var finishDate = Date.AddDays(5);
+        Schedule = await httpclient.GetFromJsonAsync<List<Polyclinic_Schedule.DTO.UserSchedule>>(
+            $"Schedule/GetDoctorSchedule?id={id}&start={Date.ToString("yyyy-MM-dd")}&finish={finishDate.ToString("yyyy-MM-dd")}");
+        var session = await storage.GetAsync<string>("session");
+        if (session.Success)
+        {
+            var id = manager.GetUserId(session.Value!);
+            userData.Id = id;
+            userData = await httpclient.GetFromJsonAsync<UserData>(
+            "UserCabinet/GetUserInfo?id=" + id);
+        }
+        await base.OnInitializedAsync();
+    }
 }

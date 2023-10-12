@@ -96,7 +96,7 @@ namespace Polyclinic_Schedule.Controllers
 
         [HttpGet("GetDoctorSchedule")]
         public async Task<ActionResult<List<DTO.UserSchedule>>>
-            ListDoctorSchedule(int id, DateTime start, DateTime finish)
+        ListDoctorSchedule(int id, DateTime start, DateTime finish)
         {
             try
             {

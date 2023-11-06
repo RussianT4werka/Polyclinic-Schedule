@@ -41,17 +41,27 @@
     private List<Polyclinic_Schedule.DTO.Doctor> Doctors = new();
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
+        GC.Collect();
         Doctors = await httpclient.GetFromJsonAsync<List<Polyclinic_Schedule.DTO.Doctor>>("Doctors?id="+ id);
         var session = await storage.GetAsync<string>("session");
-            if (session.Success)
+        if (session.Success)
+        {
+            var id = manager.GetUserId(session.Value!);
+            userData.Id = id;
+            userData = await httpclient.GetFromJsonAsync<UserData>(
+            "UserCabinet/GetUserInfo?id=" + id);
+            Thread newThread = new Thread(Cycle);
+            newThread.Start();
+        }
+            await base.OnInitializedAsync();
+        }
+        async void Cycle()
+        {
+            while (true)
             {
-                var id = manager.GetUserId(session.Value!);
-                userData.Id = id;
-                userData = await httpclient.GetFromJsonAsync<UserData>(
-                "UserCabinet/GetUserInfo?id=" + id);
+                Doctors = await httpclient.GetFromJsonAsync<List<Polyclinic_Schedule.DTO.Doctor>>("Doctors?id=" + id);
+                Thread.Sleep(1000);
             }
-        await base.OnInitializedAsync();
-        } 
-
+        }
 }
 </AuthorizeView>
